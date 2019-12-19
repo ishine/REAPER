@@ -114,7 +114,7 @@ void EpochTracker::SetParameters(void) {
   // weight given to the quality of the residual peak
   peak_quality_wt_ = 1.3;
   // cost of the unvoiced hypothesis
-  unvoiced_cost_ = 0.9;
+  unvoiced_cost_ = kUnvoicedCost;
   // cost of high NCCF values in hypothetical unvoiced regions
   nccf_uv_peak_wt_ = 0.9;
   // weight given to period length
@@ -584,7 +584,7 @@ void EpochTracker::GetPulseCorrelations(float window_dur, float peak_thresh) {
 }
 
 
-void EpochTracker::Window(const std::vector<float> input, int32_t offset, size_t size,
+void EpochTracker::Window(const std::vector<float>& input, int32_t offset, size_t size,
                           float* output) {
   if (size != window_.size()) {
     window_.resize(size);
@@ -1198,6 +1198,7 @@ bool EpochTracker::WriteDebugData(const std::vector<float>& data,
   }
   size_t  written = fwrite(&(data.front()), sizeof(data.front()),
                            data.size(), out);
+  fclose(out);
   if (written != data.size()) {
     fprintf(stderr, "Problems writing debug data (%d %d)\n",
             static_cast<int>(written), static_cast<int>(data.size()));
